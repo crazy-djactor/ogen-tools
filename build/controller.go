@@ -2,7 +2,8 @@ package build
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
+	"strings"
 
 	"github.com/olympus-protocol/ogen-deploy/config"
 	"github.com/olympus-protocol/ogen-deploy/models"
@@ -20,7 +21,15 @@ func (c *Controller) Handler(payload []byte) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(data)
+	log.Println("received new push")
+	// If the branch doesn't match "observed" branch, return without issues.
+	branch := strings.Split(data.Ref, "/")[2]
+	if branch != c.config.Branch {
+		log.Println("branch is not observed, skiping")
+		return nil, nil
+	}
+	log.Println("start build")
+
 	return nil, nil
 }
 
