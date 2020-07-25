@@ -6,4 +6,5 @@ type Config struct {
 	Port         string
 	CrossCompile bool
 	Branch       string
+	Archive      bool
 }

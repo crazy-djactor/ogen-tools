@@ -38,16 +38,21 @@ func (s *Server) applyRoutes() {
 }
 
 // NewServer creates a new server instance.
-func NewServer(config config.Config) *Server {
+func NewServer(config config.Config) (*Server, error) {
+	gin.SetMode(gin.ReleaseMode)
 	app := gin.Default()
+	ctrl, err := build.NewController(config)
+	if err != nil {
+		return nil, err
+	}
 	app.Use(cors.Default())
 	s := &Server{
-		controller: build.NewController(config),
+		controller: ctrl,
 		config:     config,
 		server:     app,
 	}
 	s.applyRoutes()
-	return s
+	return s, nil
 }
 
 func apiWrapper(c *gin.Context, method func(data []byte) (interface{}, error)) {
