@@ -42,7 +42,7 @@ func NewServer(config config.Config) *Server {
 	app := gin.Default()
 	app.Use(cors.Default())
 	s := &Server{
-		controller: build.NewController(),
+		controller: build.NewController(config),
 		config:     config,
 		server:     app,
 	}
@@ -63,6 +63,6 @@ func responseWrapper(data interface{}, err error, c *gin.Context) {
 		c.JSON(200, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"data": data})
+	c.JSON(200, gin.H{"success": true})
 	return
 }
