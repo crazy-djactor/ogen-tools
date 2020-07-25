@@ -2,6 +2,10 @@
 
 > A tool for continious building/deploying Ogen using GitHub WebHooks.
 
+## Important Note
+
+This service is only configured to work over Linux. There is no future plans to make it work on any other OS.
+
 ## Explanation
 
 This tool will make easier to have a continuous building for a production environment for Olympus.
