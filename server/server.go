@@ -1,6 +1,7 @@
 package server
 
 import (
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -49,8 +50,10 @@ func NewServer(config config.Config) *Server {
 	return s
 }
 
-func apiWrapper(c *gin.Context, method func() (interface{}, error)) {
-	res, err := method()
+func apiWrapper(c *gin.Context, method func(data []byte) (interface{}, error)) {
+	body, err := ioutil.ReadAll(c.Request.Body)
+	responseWrapper(nil, err, c)
+	res, err := method(body)
 	responseWrapper(res, err, c)
 	return
 }
