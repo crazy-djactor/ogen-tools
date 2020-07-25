@@ -15,3 +15,26 @@ It uses an API to connect to the GitHub webhooks for triggering builds.
 To connect the GitHub webhook make sure your API is open to the web and it has a domain configured, once that's ready, please open an issue with the endpoint to connect to.
 
 ## How to use
+
+Requirements:
+
+- Debian based Linux distribution.
+- Docker.
+- Nginx or Apache.
+- SSL Certificates.
+- Golang (optional).
+
+### Get the program
+
+To get the Ogen Deployment Tool you can either build yourself or download it directly from GitHub <https://github.com/olympus-protocol/ogen-deploy/releases>
+
+To build it simply use the common golang build command `go build main.go`.
+
+### Flags
+
+| Flag        | Type   | Description                                                                |
+|-------------|--------|----------------------------------------------------------------------------|
+| `--port`    | string | Define the port for the API request listener.                              |
+| `--branch`  | string | Define the branch used to monitor commits and updates.                     |
+| `--build`   | string | Use `all` to cross-compile or leave it to build for current OS.            |
+| `--datadir` | string | Full path of the folder to store the files (will be created if not found)  |
