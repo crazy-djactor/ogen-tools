@@ -36,5 +36,5 @@ To build it simply use the common golang build command `go build main.go`.
 |-------------|--------|----------------------------------------------------------------------------|
 | `--port`    | string | Define the port for the API request listener.                              |
 | `--branch`  | string | Define the branch used to monitor commits and updates.                     |
-| `--build`   | string | Use `all` to cross-compile or leave it to build for current OS.            |
+| `--cross`   | bool   | Set to false to disable cross-compiling on all available platforms.        |
 | `--datadir` | string | Full path of the folder to store the files (will be created if not found)  |
