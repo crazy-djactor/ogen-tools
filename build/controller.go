@@ -35,6 +35,8 @@ func (c *Controller) build() error {
 	if err != nil {
 		return err
 	}
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = path
 	err = cmd.Run()
 	if err != nil {
