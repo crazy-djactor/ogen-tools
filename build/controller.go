@@ -71,8 +71,9 @@ func (c *Controller) clone() error {
 			if err != nil {
 				return err
 			}
+			branch := "refs/heads/" + c.config.Branch
 			err = w.Checkout(&git.CheckoutOptions{
-				Branch: plumbing.NewBranchReferenceName("ref/head/" + c.config.Branch),
+				Branch: plumbing.NewBranchReferenceName(branch),
 			})
 			if err != nil {
 				return err
