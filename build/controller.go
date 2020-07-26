@@ -53,36 +53,17 @@ func (c *Controller) folder() error {
 
 // clone will clone the ogen repository, if it already exists will
 func (c *Controller) clone() error {
+clone:
 	_, err := git.PlainClone("./ogen", false, &git.CloneOptions{
-		URL:      "https://github.com/olympus-protocol/ogen",
-		Progress: os.Stdout,
+		URL:           "https://github.com/olympus-protocol/ogen",
+		Progress:      os.Stdout,
+		ReferenceName: plumbing.NewBranchReferenceName(c.config.Branch),
 	})
 	if err != nil {
+		// If the repo already exists, delete it and clone again
 		if err == git.ErrRepositoryAlreadyExists {
-			r, err := git.PlainOpen("./ogen")
-			if err != nil {
-				return err
-			}
-			err = r.Fetch(&git.FetchOptions{RemoteName: "origin"})
-			if err != nil {
-				return err
-			}
-			w, err := r.Worktree()
-			if err != nil {
-				return err
-			}
-			branch := "refs/heads/" + c.config.Branch
-			err = w.Checkout(&git.CheckoutOptions{
-				Branch: plumbing.NewBranchReferenceName(branch),
-			})
-			if err != nil {
-				return err
-			}
-			err = w.Pull(&git.PullOptions{RemoteName: "origin"})
-			if err != nil {
-				return err
-			}
-			return nil
+			os.RemoveAll("./ogen")
+			goto clone
 		}
 		return err
 	}
