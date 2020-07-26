@@ -6,6 +6,10 @@
 
 This service is only configured to work over Linux. There is no future plans to make it work on any other OS.
 
+It is recommended to create a cron process to cleanup Docker images and containers constantly, builds are done using heavy size docker images and might take a lot of disk usage.
+
+There is an optional script to remove all docker images on `clean_docker.sh`
+
 ## Explanation
 
 This tool will make easier to have a continuous building for a production environment for Olympus.
