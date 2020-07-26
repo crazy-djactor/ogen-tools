@@ -25,6 +25,7 @@ type Controller struct {
 // move will adjust the produced binaries to match the datadir structure
 func (c *Controller) move() error {
 	_ = os.Rename("./ogen/release", path.Join(c.config.Datadir, "ogen-release"))
+	os.Chmod(path.Join(c.config.Datadir, "ogen-release"), 0777)
 	return nil
 }
 
