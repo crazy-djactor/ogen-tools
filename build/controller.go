@@ -110,21 +110,25 @@ func (c *Controller) Handler(payload []byte) (interface{}, error) {
 		log.Println("clone repository")
 		err = c.clone()
 		if err != nil {
+			log.Println("error: " + err.Error())
 			return
 		}
 		log.Println("creating folder structure")
 		err = c.folder()
 		if err != nil {
+			log.Println("error: " + err.Error())
 			return
 		}
 		log.Println("building ogen")
 		err = c.build()
 		if err != nil {
+			log.Println("error: " + err.Error())
 			return
 		}
 		log.Println("moving files")
 		err = c.move()
 		if err != nil {
+			log.Println("error: " + err.Error())
 			return
 		}
 	}()
