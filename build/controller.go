@@ -91,8 +91,6 @@ func (c *Controller) clone() error {
 // Handler is the entrance of the GitHub Webhooks POST information.
 func (c *Controller) Handler(payload []byte) (interface{}, error) {
 	log.Println("received new push")
-	c.buildLock.Lock()
-	defer c.buildLock.Unlock()
 	var data models.PushEvent
 	err := json.Unmarshal(payload, &data)
 	if err != nil {
@@ -105,27 +103,31 @@ func (c *Controller) Handler(payload []byte) (interface{}, error) {
 		log.Println("branch is not observed, skiping")
 		return nil, nil
 	}
-	log.Println("start build")
-	log.Println("clone repository")
-	err = c.clone()
-	if err != nil {
-		return nil, err
-	}
-	log.Println("creating folder structure")
-	err = c.folder()
-	if err != nil {
-		return nil, err
-	}
-	log.Println("building ogen")
-	err = c.build()
-	if err != nil {
-		return nil, err
-	}
-	log.Println("moving files")
-	err = c.move()
-	if err != nil {
-		return nil, err
-	}
+	go func() {
+		c.buildLock.Lock()
+		defer c.buildLock.Unlock()
+		log.Println("start build")
+		log.Println("clone repository")
+		err = c.clone()
+		if err != nil {
+			return
+		}
+		log.Println("creating folder structure")
+		err = c.folder()
+		if err != nil {
+			return
+		}
+		log.Println("building ogen")
+		err = c.build()
+		if err != nil {
+			return
+		}
+		log.Println("moving files")
+		err = c.move()
+		if err != nil {
+			return
+		}
+	}()
 	return nil, nil
 }
 

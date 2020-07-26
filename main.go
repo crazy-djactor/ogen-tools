@@ -16,9 +16,9 @@ func main() {
 	flag.StringVar(&branch, "branch", "master", "Define the branch used to monitor commits and updates.")
 	flag.Parse()
 	config := config.Config{
-		Datadir:      datadir,
-		Port:         port,
-		Branch:       branch,
+		Datadir: datadir,
+		Port:    port,
+		Branch:  branch,
 	}
 	s, err := server.NewServer(config)
 	if err != nil {
