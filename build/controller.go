@@ -23,32 +23,14 @@ type Controller struct {
 }
 
 // move will adjust the produced binaries to match the datadir structure
-func (c *Controller) move(commit string) error {
-	// TODO
-	if c.config.CrossCompile {
-		if c.config.Archive {
-
-		} else {
-
-		}
-	} else {
-		if c.config.Archive {
-
-		} else {
-
-		}
-	}
+func (c *Controller) move() error {
+	_ = os.Rename("./ogen/release", path.Join(c.config.Datadir, "ogen-release"))
 	return nil
 }
 
 // build will produce new binaries
 func (c *Controller) build() error {
-	var cmd *exec.Cmd
-	if c.config.CrossCompile {
-		cmd = exec.Command("make", "build_cross_docker")
-	} else {
-		cmd = exec.Command("make", "build")
-	}
+	cmd := exec.Command("make", "build_cross_docker")
 	path, err := filepath.Abs("ogen/")
 	if err != nil {
 		return err
@@ -63,24 +45,15 @@ func (c *Controller) build() error {
 }
 
 // folder will create the folder path and remove if necesary
-func (c *Controller) folder(commit string) error {
+func (c *Controller) folder() error {
 	_ = os.MkdirAll(c.config.Datadir, 0777)
-	if c.config.Archive {
-		// If is run on archive mode, create a folder with a commit reference.
-		os.Mkdir(path.Join(c.config.Datadir, "ogen-release-", commit[0:8]), 0777)
-	} else {
-		// If not, then remove the folder and create a new one to remove older builds
-		_ = os.Remove(path.Join(c.config.Datadir, "ogen-release/"))
-		_ = os.Mkdir(path.Join(c.config.Datadir, "ogen-release/"), 0777)
-	}
-	// For archive mode, the file path is at config.DataDir + ogen-release-COMMIT/
-	// For non-archive mode, the file path is at config.DataDir + ogen-release/
+	_ = os.Remove(path.Join(c.config.Datadir, "ogen-release/"))
 	return nil
 }
 
 // clone will clone the ogen repository, if it already exists will
-func (c *Controller) clone() (string, error) {
-	r, err := git.PlainClone("./ogen", false, &git.CloneOptions{
+func (c *Controller) clone() error {
+	_, err := git.PlainClone("./ogen", false, &git.CloneOptions{
 		URL:      "https://github.com/olympus-protocol/ogen",
 		Progress: os.Stdout,
 	})
@@ -88,39 +61,31 @@ func (c *Controller) clone() (string, error) {
 		if err == git.ErrRepositoryAlreadyExists {
 			r, err := git.PlainOpen("./ogen")
 			if err != nil {
-				return "", err
+				return err
 			}
 			err = r.Fetch(&git.FetchOptions{RemoteName: "origin"})
 			if err != nil {
-				return "", err
+				return err
 			}
 			w, err := r.Worktree()
 			if err != nil {
-				return "", err
+				return err
 			}
 			err = w.Checkout(&git.CheckoutOptions{
 				Branch: plumbing.NewBranchReferenceName(c.config.Branch),
 			})
 			if err != nil {
-				return "", err
+				return err
 			}
 			err = w.Pull(&git.PullOptions{RemoteName: "origin"})
 			if err != nil {
-				return "", err
+				return err
 			}
-			ref, err := r.Head()
-			if err != nil {
-				return "", err
-			}
-			return ref.Hash().String(), nil
+			return nil
 		}
-		return "", err
+		return err
 	}
-	ref, err := r.Head()
-	if err != nil {
-		return "", err
-	}
-	return ref.Hash().String(), nil
+	return nil
 }
 
 // Handler is the entrance of the GitHub Webhooks POST information.
@@ -142,12 +107,12 @@ func (c *Controller) Handler(payload []byte) (interface{}, error) {
 	}
 	log.Println("start build")
 	log.Println("clone repository")
-	commit, err := c.clone()
+	err = c.clone()
 	if err != nil {
 		return nil, err
 	}
 	log.Println("creating folder structure")
-	err = c.folder(commit)
+	err = c.folder()
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +122,7 @@ func (c *Controller) Handler(payload []byte) (interface{}, error) {
 		return nil, err
 	}
 	log.Println("moving files")
-	err = c.move(commit)
+	err = c.move()
 	if err != nil {
 		return nil, err
 	}

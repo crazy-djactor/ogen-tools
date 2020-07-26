@@ -4,7 +4,5 @@ package config
 type Config struct {
 	Datadir      string
 	Port         string
-	CrossCompile bool
 	Branch       string
-	Archive      bool
 }
