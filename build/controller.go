@@ -2,6 +2,7 @@ package build
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -72,7 +73,7 @@ func (c *Controller) clone() error {
 				return err
 			}
 			err = w.Checkout(&git.CheckoutOptions{
-				Branch: plumbing.NewBranchReferenceName(c.config.Branch),
+				Branch: plumbing.NewBranchReferenceName("ref/head/" + c.config.Branch),
 			})
 			if err != nil {
 				return err
