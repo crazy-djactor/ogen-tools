@@ -24,7 +24,7 @@ type Controller struct {
 
 // move will adjust the produced binaries to match the datadir structure
 func (c *Controller) move() error {
-	_ = os.Remove(path.Join(c.config.Datadir, "ogen-release"))
+	_ = os.RemoveAll(path.Join(c.config.Datadir, "ogen-release"))
 	_ = os.Rename("./ogen/release", path.Join(c.config.Datadir, "ogen-release"))
 	_ = os.Chmod(path.Join(c.config.Datadir, "ogen-release"), 0777)
 	return nil
@@ -33,13 +33,13 @@ func (c *Controller) move() error {
 // build will produce new binaries
 func (c *Controller) build() error {
 	cmd := exec.Command("make", "build_cross_docker")
-	path, err := filepath.Abs("ogen/")
+	p, err := filepath.Abs("ogen/")
 	if err != nil {
 		return err
 	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Dir = path
+	cmd.Dir = p
 	err = cmd.Run()
 	if err != nil {
 		return err
