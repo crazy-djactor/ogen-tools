@@ -480,26 +480,26 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 
 	// Get all node IDs
 	for i := 1; i <= c.Nodes; i++ {
-		go func(wg *sync.WaitGroup) {
+		go func(wg *sync.WaitGroup, index int) {
 			defer wg.Done()
 			get:
-			client := rpcClient(i)
+			client := rpcClient(index)
 			netInfo, err := client.Network.GetNetworkInfo(context.Background(), &proto.Empty{})
 			if err != nil {
 				goto get
 			}
-			maL, err := multiaddr.NewMultiaddr("/ip4/127.0.0.1/tcp/" + strconv.Itoa(24000+i) + "/p2p/" + netInfo.ID)
+			maL, err := multiaddr.NewMultiaddr("/ip4/127.0.0.1/tcp/" + strconv.Itoa(24000+index) + "/p2p/" + netInfo.ID)
 			if err != nil {
 				return
 			}
-			maE, err := multiaddr.NewMultiaddr("/ip4/" + c.ExternalHost + "/tcp/" + strconv.Itoa(24000+i) + "/p2p/" + netInfo.ID)
+			maE, err := multiaddr.NewMultiaddr("/ip4/" + c.ExternalHost + "/tcp/" + strconv.Itoa(24000+index) + "/p2p/" + netInfo.ID)
 			if err != nil {
 				return
 			}
 			peerAddr = append(peerAddr, maL)
 			externalAddr = append(peerAddr, maE)
 			_ = client.Close()
-		}(&wg)
+		}(&wg, i)
 	}
 
 	wg.Wait()
