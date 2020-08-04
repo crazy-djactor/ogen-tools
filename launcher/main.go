@@ -118,13 +118,7 @@ func main() {
 
 	log.Println("Connecting nodes and start proposers")
 
-start:
-	_, extMa, err := startChain(c)
-	if err != nil {
-		time.Sleep(time.Second * 10)
-		log.Println("Starting the chain failed, retrying...")
-		goto start
-	}
+	_, extMa := startChain(c)
 
 	log.Println("Creating chain file for external usage")
 
@@ -478,28 +472,37 @@ func runInstances(c config.Config, gwg *sync.WaitGroup) error {
 	return nil
 }
 
-func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multiaddr.Multiaddr, err error) {
+func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multiaddr.Multiaddr) {
 	var peerAddr, externalAddr []multiaddr.Multiaddr
+
+	var wg sync.WaitGroup
+	wg.Add(c.Nodes)
 
 	// Get all node IDs
 	for i := 1; i <= c.Nodes; i++ {
-		client := rpcClient(i)
-		netInfo, err := client.Network.GetNetworkInfo(context.Background(), &proto.Empty{})
-		if err != nil {
-			return nil, nil, err
-		}
-		maL, err := multiaddr.NewMultiaddr("/ip4/127.0.0.1/tcp/" + strconv.Itoa(24000+i) + "/p2p/" + netInfo.ID)
-		if err != nil {
-			return nil, nil, err
-		}
-		maE, err := multiaddr.NewMultiaddr("/ip4/" + c.ExternalHost + "/tcp/" + strconv.Itoa(24000+i) + "/p2p/" + netInfo.ID)
-		if err != nil {
-			return nil, nil, err
-		}
-		peerAddr = append(peerAddr, maL)
-		externalAddr = append(peerAddr, maE)
-		_ = client.Close()
+		go func(wg *sync.WaitGroup) {
+			defer wg.Done()
+			get:
+			client := rpcClient(i)
+			netInfo, err := client.Network.GetNetworkInfo(context.Background(), &proto.Empty{})
+			if err != nil {
+				goto get
+			}
+			maL, err := multiaddr.NewMultiaddr("/ip4/127.0.0.1/tcp/" + strconv.Itoa(24000+i) + "/p2p/" + netInfo.ID)
+			if err != nil {
+				return
+			}
+			maE, err := multiaddr.NewMultiaddr("/ip4/" + c.ExternalHost + "/tcp/" + strconv.Itoa(24000+i) + "/p2p/" + netInfo.ID)
+			if err != nil {
+				return
+			}
+			peerAddr = append(peerAddr, maL)
+			externalAddr = append(peerAddr, maE)
+			_ = client.Close()
+		}(&wg)
 	}
+
+	wg.Wait()
 
 	// Connect nodes between them
 	for i := 1; i <= c.Nodes; i++ {
@@ -507,7 +510,7 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 		for _, p := range peerAddr {
 			_, err := client.Network.AddPeer(context.Background(), &proto.IP{Host: p.String()})
 			if err != nil {
-				return nil, nil, err
+				return nil, nil
 			}
 		}
 		_ = client.Close()
@@ -518,11 +521,11 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 		client := rpcClient(i)
 		_, err := client.Utils.StartProposer(context.Background(), &proto.Password{Password: c.Password})
 		if err != nil {
-			return nil, nil, err
+			return nil, nil
 		}
 	}
 
-	return peerAddr, externalAddr, nil
+	return peerAddr, externalAddr
 }
 
 // NewRPCClient creates a new RPC client.
