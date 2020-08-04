@@ -25,3 +25,7 @@ launcher/ogen_launcher
 ./ogen_compiler
 ./ogen_launcher
 .DS_Store
+chain.json
+ogen_*
+data/
+bin/
