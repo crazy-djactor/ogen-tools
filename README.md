@@ -21,6 +21,9 @@ This repository contains two tools to build Olympus development scenarios easily
 
 The compiler is a restful API that continuously runs Olympus cross-compiling scripts with a POST call from Github webhooks.
 
+For more information, please go to the [Compiler Instructions](./compiler/README.md)
 ### Launcher
 
 the launcher is a daemon script that runs a test network automatically.
+
+For more information, please go to the [Launcher Instructions](./launcher/README.md)
