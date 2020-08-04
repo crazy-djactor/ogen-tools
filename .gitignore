@@ -15,3 +15,12 @@
 # vendor/
 
 .idea/
+*.tar.gz
+
+# binaries
+compiler/main
+compiler/ogen_compiler
+launcher/main
+launcher/ogen_launcher
+./ogen_compiler
+./ogen_launcher
