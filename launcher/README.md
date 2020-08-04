@@ -21,3 +21,4 @@ To build it simply use the common golang build command `go build main.go`.
 | `--password`    | string | Password for keystore and wallet                              |
 | `--nodes`    | int | Setup the amount of nodes the testnet (minimum of 3 nodes)                              |
 | `--validators`    | int | Define the amount of validators per node                            |
+| `--host`    | string | The external IP address to specify on chain file                           |
