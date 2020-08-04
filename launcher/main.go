@@ -121,6 +121,7 @@ func main() {
 start:
 	_, extMa, err := startChain(c)
 	if err != nil {
+		time.Sleep(time.Second * 10)
 		log.Println("Starting the chain failed, retrying...")
 		goto start
 	}
