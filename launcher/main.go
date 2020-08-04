@@ -54,7 +54,7 @@ var datadir = "./data/"
 
 var ogenSubFolderPrefix = "ogen-node-"
 
-var genesisTime = time.Unix(time.Now().Unix()+60, 0)
+var genesisTime = time.Unix(time.Now().Unix()+120, 0)
 
 var premineAccount = bls.RandKey()
 
@@ -116,14 +116,13 @@ func main() {
 		}
 	}()
 
-	// Wait for nodes to start working
-	time.Sleep(time.Second * 30)
-
 	log.Println("Connecting nodes and start proposers")
 
+start:
 	_, extMa, err := startChain(c)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Starting the chain failed, retrying...")
+		goto start
 	}
 
 	log.Println("Creating chain file for external usage")
