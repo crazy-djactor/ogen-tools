@@ -54,7 +54,7 @@ var datadir = "./data/"
 
 var ogenSubFolderPrefix = "ogen-node-"
 
-var genesisTime = time.Unix(time.Now().Unix()+120, 0)
+var genesisTime = time.Unix(time.Now().Unix()+180, 0)
 
 var premineAccount = bls.RandKey()
 
