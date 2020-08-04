@@ -11,9 +11,11 @@ Requirements:
 - SSL Certificates.
 - Golang (optional).
 
+Once your API is running with a domain with a SSL certificate, please open an issue with the endpoint to connect the GitHub WebHook API to you.
+
 ### Get the program
 
-To get the Ogen Deployment Tool you can either build yourself or download it directly from GitHub <https://github.com/olympus-protocol/ogen-tools/compiler/releases>
+To get the Compiler you can either build yourself or download it directly from GitHub <https://github.com/olympus-protocol/ogen-tools/releases/latest>
 
 To build it simply use the common golang build command `go build main.go`.
 
