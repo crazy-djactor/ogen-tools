@@ -24,3 +24,4 @@ launcher/main
 launcher/ogen_launcher
 ./ogen_compiler
 ./ogen_launcher
+.DS_Store
