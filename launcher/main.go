@@ -482,8 +482,8 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 	for i := 1; i <= c.Nodes; i++ {
 		go func(wg *sync.WaitGroup, index int) {
 			defer wg.Done()
-			get:
 			client := rpcClient(index)
+			get:
 			netInfo, err := client.Network.GetNetworkInfo(context.Background(), &proto.Empty{})
 			if err != nil {
 				goto get
