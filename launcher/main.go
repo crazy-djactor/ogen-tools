@@ -497,7 +497,7 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 				return
 			}
 			peerAddr = append(peerAddr, maL)
-			externalAddr = append(peerAddr, maE)
+			externalAddr = append(externalAddr, maE)
 			_ = client.Close()
 		}(&wg, i)
 	}
