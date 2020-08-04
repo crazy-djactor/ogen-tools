@@ -1,3 +1,5 @@
 # Production
 bin/
 data/
+ogen-*/
+chain.json
