@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/olympus-protocol/ogen-deploy/config"
-	"github.com/olympus-protocol/ogen-deploy/server"
+	"github.com/olympus-protocol/ogen-tools/compiler/config"
+	"github.com/olympus-protocol/ogen-tools/compiler/server"
 )
 
 func main() {
@@ -15,14 +15,15 @@ func main() {
 	flag.StringVar(&port, "port", "8080", "Define the port for the API request listener.")
 	flag.StringVar(&branch, "branch", "master", "Define the branch used to monitor commits and updates.")
 	flag.Parse()
-	config := config.Config{
-		Datadir: datadir,
+	c := config.Config{
+		DataDir: datadir,
 		Port:    port,
 		Branch:  branch,
 	}
-	s, err := server.NewServer(config)
+	s, err := server.NewServer(c)
 	if err != nil {
 		log.Fatal(err)
 	}
-	s.Start()
+	err = s.Start()
+	panic(err)
 }

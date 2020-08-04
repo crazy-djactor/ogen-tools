@@ -1,4 +1,4 @@
-module github.com/olympus-protocol/ogen-deploy
+module github.com/olympus-protocol/ogen-tools/compiler
 
 go 1.14
 

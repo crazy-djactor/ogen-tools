@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/olympus-protocol/ogen-deploy/build"
-	"github.com/olympus-protocol/ogen-deploy/config"
+	"github.com/olympus-protocol/ogen-tools/compiler/build"
+	"github.com/olympus-protocol/ogen-tools/compiler/config"
 )
 
 // Server encapsulates a gin server with the building controllers.

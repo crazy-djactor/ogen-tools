@@ -1,44 +1,26 @@
-# Ogen Automatically Deployment Tool
+# Ogen development tools
 
-> A tool for continious building/deploying Ogen using GitHub WebHooks.
+> A group of tool for continious building/deploying Ogen.
 
 ## Important Note
 
-This service is only configured to work over Linux. There is no future plans to make it work on any other OS.
+This services are developed to work over Linux. There are no future plans to make it working for other OS.
 
-It is recommended to create a cron process to cleanup Docker images and containers constantly, builds are done using heavy size docker images and might take a lot of disk usage.
+It is recommended to create a cron process to clean Docker images and containers constantly, builds are done using heavy size docker images and might take a lot of disk usage.
 
 There is an optional script to remove all docker images on `clean_docker.sh`
 
 ## Explanation
 
-This tool will make easier to have a continuous building for a production environment for Olympus.
+This repository contains two tools to build Olympus development scenarios easily.
 
-It uses an API to connect to the GitHub webhooks for triggering builds.
+* Compiler
+* Launcher
 
-To connect the GitHub webhook make sure your API is open to the web and it has a domain configured, once that's ready, please open an issue with the endpoint to connect to.
+### Compiler
 
-## How to use
+The compiler is a restful API that continuously runs Olympus cross-compiling scripts with a POST call from Github webhooks.
 
-Requirements:
+### Launcher
 
-- Debian based Linux distribution.
-- `make` (to execute makefile comands).
-- Docker.
-- Nginx or Apache.
-- SSL Certificates.
-- Golang (optional).
-
-### Get the program
-
-To get the Ogen Deployment Tool you can either build yourself or download it directly from GitHub <https://github.com/olympus-protocol/ogen-deploy/releases>
-
-To build it simply use the common golang build command `go build main.go`.
-
-### Flags
-
-| Flag        | Type   | Description                                                                |
-|-------------|--------|----------------------------------------------------------------------------|
-| `--port`    | string | Define the port for the API request listener.                              |
-| `--branch`  | string | Define the branch used to monitor commits and updates.                     |
-| `--datadir` | string | Full path of the folder to store the files (will be created if not found). |
+the launcher is a daemon script that runs a test network automatically.

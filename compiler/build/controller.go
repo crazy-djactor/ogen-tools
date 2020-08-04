@@ -12,8 +12,8 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/olympus-protocol/ogen-deploy/config"
-	"github.com/olympus-protocol/ogen-deploy/models"
+	"github.com/olympus-protocol/ogen-tools/compiler/config"
+	"github.com/olympus-protocol/ogen-tools/compiler/models"
 )
 
 // Controller is the handler for GitHub WebHooks.
@@ -22,11 +22,11 @@ type Controller struct {
 	buildLock sync.RWMutex
 }
 
-// move will adjust the produced binaries to match the datadir structure
+// move will adjust the produced binaries to match the data directory structure
 func (c *Controller) move() error {
-	_ = os.RemoveAll(path.Join(c.config.Datadir, "ogen-release"))
-	_ = os.Rename("./ogen/release", path.Join(c.config.Datadir, "ogen-release"))
-	_ = os.Chmod(path.Join(c.config.Datadir, "ogen-release"), 0777)
+	_ = os.RemoveAll(path.Join(c.config.DataDir, "ogen-release"))
+	_ = os.Rename("./ogen/release", path.Join(c.config.DataDir, "ogen-release"))
+	_ = os.Chmod(path.Join(c.config.DataDir, "ogen-release"), 0777)
 	return nil
 }
 
@@ -50,8 +50,8 @@ func (c *Controller) build() error {
 
 // folder will create the folder path and remove if necesary
 func (c *Controller) folder() error {
-	_ = os.MkdirAll(c.config.Datadir, 0777)
-	_ = os.Remove(path.Join(c.config.Datadir, "ogen-release/"))
+	_ = os.MkdirAll(c.config.DataDir, 0777)
+	_ = os.Remove(path.Join(c.config.DataDir, "ogen-release/"))
 	return nil
 }
 
@@ -66,7 +66,7 @@ clone:
 	if err != nil {
 		// If the repo already exists, delete it and clone again
 		if err == git.ErrRepositoryAlreadyExists {
-			os.RemoveAll("./ogen")
+			_ = os.RemoveAll("./ogen")
 			goto clone
 		}
 		return err
