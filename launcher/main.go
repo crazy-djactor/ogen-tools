@@ -22,6 +22,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
@@ -505,27 +506,51 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 	wg.Wait()
 
 	// Connect nodes between them
+
 	for i := 1; i <= c.Nodes; i++ {
-		client := rpcClient(i)
-		for _, p := range peerAddr {
-			_, err := client.Network.AddPeer(context.Background(), &proto.IP{Host: p.String()})
-			if err != nil {
-				return nil, nil
+		wg.Add(1)
+		go func(index int, wg *sync.WaitGroup) {
+			defer wg.Done()
+			client := rpcClient(index)
+			peers := getRandomPeers(peerAddr)
+			for _, p := range peers {
+				_, err := client.Network.AddPeer(context.Background(), &proto.IP{Host: p.String()})
+				if err != nil {
+					continue
+				}
 			}
-		}
-		_ = client.Close()
+			_ = client.Close()
+		}(i, &wg)
 	}
+
+	wg.Wait()
 
 	// Start the block proposers
 	for i := 1; i <= c.Nodes; i++ {
-		client := rpcClient(i)
-		_, err := client.Utils.StartProposer(context.Background(), &proto.Password{Password: c.Password})
-		if err != nil {
-			return nil, nil
-		}
+		wg.Add(1)
+		go func(index int, wg *sync.WaitGroup) {
+			defer wg.Done()
+			client := rpcClient(index)
+			_, err := client.Utils.StartProposer(context.Background(), &proto.Password{Password: c.Password})
+			if err != nil {
+				return
+			}
+		}(i, &wg)
+
 	}
 
+	wg.Wait()
+
 	return peerAddr, externalAddr
+}
+
+func getRandomPeers(peers []multiaddr.Multiaddr) []multiaddr.Multiaddr {
+	randPeers := make([]multiaddr.Multiaddr, 8)
+	for i := 0; i < 8; i++ {
+		r := rand.Intn(len(peers))
+		randPeers = append(randPeers, peers[r])
+	}
+	return randPeers
 }
 
 // NewRPCClient creates a new RPC client.
