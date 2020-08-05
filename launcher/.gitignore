@@ -3,3 +3,4 @@ bin/
 data/
 ogen-*/
 chain.json
+ogen/

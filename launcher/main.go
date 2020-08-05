@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/go-git/go-git/v5"
 	"github.com/multiformats/go-multiaddr"
 	"github.com/olympus-protocol/ogen-tools/launcher/config"
 	"github.com/olympus-protocol/ogen/bls"
@@ -55,7 +56,7 @@ var datadir = "./data/"
 
 var ogenSubFolderPrefix = "ogen-node-"
 
-var genesisTime = time.Unix(time.Now().Unix()+180, 0)
+var genesisTime = time.Unix(time.Now().Unix()+120, 0)
 
 var premineAccount = bls.RandKey()
 
@@ -69,10 +70,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("Downloading Ogen")
-	err = downloadOgen()
-	if err != nil {
-		log.Fatal(err)
+	if c.Source {
+		log.Println("Building Ogen")
+		err = buildOgen()
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		log.Println("Downloading Ogen")
+		err = downloadOgen()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	log.Println("Generate Validators")
@@ -190,6 +199,50 @@ func folders(c config.Config) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func buildOgen() error {
+	_ = os.RemoveAll("./bin")
+	_ = os.RemoveAll("./ogen")
+
+clone:
+	_, err := git.PlainClone("./ogen", false, &git.CloneOptions{
+		URL:           "https://github.com/olympus-protocol/ogen",
+		Progress:      os.Stdout,
+	})
+	if err != nil {
+		// If the repo already exists, delete it and clone again
+		if err == git.ErrRepositoryAlreadyExists {
+			_ = os.RemoveAll("./ogen")
+			goto clone
+		}
+		return err
+	}
+	cmd := exec.Command("make", "build")
+	cmd.Dir = "./ogen"
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	err = cmd.Run()
+	if err != nil {
+		return err
+	}
+
+	err = os.Mkdir("./bin", 0777)
+	if err != nil {
+		return err
+	}
+
+	err = os.Rename("./ogen/ogen", "./bin/ogen")
+	if err != nil {
+		return err
+	}
+
+	err = os.Chmod("./bin/ogen", 0777)
+	if err != nil {
+		return err
 	}
 
 	return nil
