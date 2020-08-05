@@ -151,11 +151,14 @@ func main() {
 func loadConfig() config.Config {
 	var pass, externalHost string
 	var nodes, validators int
+	var debug, source bool
 
 	flag.StringVar(&pass, "password", "", "Password for keystore and wallet")
 	flag.StringVar(&externalHost, "host", "127.0.0.1", "IP of the external host to use on chain file")
 	flag.IntVar(&nodes, "nodes", 5, "Setup the amount of nodes the testnet (minimum of 5 nodes)")
 	flag.IntVar(&validators, "validators", 32, "Define the amount of validators per node (default 32 nodes)")
+	flag.BoolVar(&debug, "debug", false, "Use this flag to start nodes on debug mode")
+	flag.BoolVar(&source, "source", false, "Use this flag to build from source")
 	flag.Parse()
 
 	if pass == "" {
@@ -163,10 +166,12 @@ func loadConfig() config.Config {
 	}
 
 	c := config.Config{
-		Password:   pass,
-		Nodes:      nodes,
-		Validators: validators,
+		Password:     pass,
+		Nodes:        nodes,
+		Validators:   validators,
 		ExternalHost: externalHost,
+		Debug:        debug,
+		Source:       source,
 	}
 	return c
 }
@@ -420,7 +425,12 @@ func runInstances(c config.Config, gwg *sync.WaitGroup) error {
 				return
 			}
 
-			cmd := exec.Command("./ogen", "--datadir="+dataDirAbsPath, "--log_file", "--port="+strconv.Itoa(24000+index), "--rpc_port="+strconv.Itoa(25000+index))
+			var cmd *exec.Cmd
+			if c.Debug {
+				cmd = exec.Command("./ogen", "--debug", "--datadir="+dataDirAbsPath, "--log_file", "--port="+strconv.Itoa(24000+index), "--rpc_port="+strconv.Itoa(25000+index))
+			} else {
+				cmd = exec.Command("./ogen", "--datadir="+dataDirAbsPath, "--log_file", "--port="+strconv.Itoa(24000+index), "--rpc_port="+strconv.Itoa(25000+index))
+			}
 
 			p, err := filepath.Abs("bin/")
 			if err != nil {
@@ -484,7 +494,7 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 		go func(wg *sync.WaitGroup, index int) {
 			defer wg.Done()
 			client := rpcClient(index)
-			get:
+		get:
 			netInfo, err := client.Network.GetNetworkInfo(context.Background(), &proto.Empty{})
 			if err != nil {
 				goto get

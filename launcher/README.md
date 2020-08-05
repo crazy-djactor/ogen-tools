@@ -22,3 +22,5 @@ To build it simply use the common golang build command `go build main.go`.
 | `--nodes`    | int | Setup the amount of nodes the testnet (minimum of 3 nodes)                              |
 | `--validators`    | int | Define the amount of validators per node                            |
 | `--host`    | string | The external IP address to specify on chain file                           |
+| `--source`    | bool | Use this flag to build from source                           |
+| `--debug`    | bool | Use this flag to start nodes on debug mode                           |

@@ -6,4 +6,6 @@ type Config struct {
 	ExternalHost string
 	Nodes        int
 	Validators   int
+	Source       bool
+	Debug        bool
 }
