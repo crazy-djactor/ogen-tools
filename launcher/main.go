@@ -476,8 +476,8 @@ func runInstances(c config.Config, gwg *sync.WaitGroup) error {
 func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multiaddr.Multiaddr) {
 	var peerAddr, externalAddr []multiaddr.Multiaddr
 
-	var wg sync.WaitGroup
-	wg.Add(c.Nodes)
+	var fwg sync.WaitGroup
+	fwg.Add(c.Nodes)
 
 	// Get all node IDs
 	for i := 1; i <= c.Nodes; i++ {
@@ -500,15 +500,17 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 			peerAddr = append(peerAddr, maL)
 			externalAddr = append(externalAddr, maE)
 			_ = client.Close()
-		}(&wg, i)
+		}(&fwg, i)
 	}
 
-	wg.Wait()
+	fwg.Wait()
 
 	// Connect nodes between them
 
+	var swg sync.WaitGroup
+
+	swg.Add(c.Nodes)
 	for i := 1; i <= c.Nodes; i++ {
-		wg.Add(1)
 		go func(index int, wg *sync.WaitGroup) {
 			defer wg.Done()
 			client := rpcClient(index)
@@ -520,14 +522,16 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 				}
 			}
 			_ = client.Close()
-		}(i, &wg)
+		}(i, &swg)
 	}
 
-	wg.Wait()
+	swg.Wait()
 
 	// Start the block proposers
+
+	var twg sync.WaitGroup
+	twg.Add(c.Nodes)
 	for i := 1; i <= c.Nodes; i++ {
-		wg.Add(1)
 		go func(index int, wg *sync.WaitGroup) {
 			defer wg.Done()
 			client := rpcClient(index)
@@ -535,20 +539,20 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 			if err != nil {
 				return
 			}
-		}(i, &wg)
+		}(i, &twg)
 
 	}
 
-	wg.Wait()
+	twg.Wait()
 
 	return peerAddr, externalAddr
 }
 
 func getRandomPeers(peers []multiaddr.Multiaddr) []multiaddr.Multiaddr {
 	randPeers := make([]multiaddr.Multiaddr, 8)
-	for i := 0; i < 8; i++ {
+	for i := range randPeers {
 		r := rand.Intn(len(peers))
-		randPeers = append(randPeers, peers[r])
+		randPeers[i] = peers[r]
 	}
 	return randPeers
 }
