@@ -73,7 +73,7 @@ func main() {
 
 	if c.Source {
 		log.Println("Building Ogen")
-		err = buildOgen()
+		err = buildOgen(c)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -17,7 +17,7 @@ Once your API is running with a domain with a SSL certificate, please open an is
 
 To get the Compiler you can either build yourself or download it directly from GitHub <https://github.com/olympus-protocol/ogen-tools/releases/latest>
 
-To build it simply use the common golang build command `go build main.go`.
+To build the tools run `make build` on the main folder.
 
 ### Flags
 
