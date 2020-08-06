@@ -8,4 +8,5 @@ type Config struct {
 	Validators   int
 	Source       bool
 	Debug        bool
+	Branch       string
 }

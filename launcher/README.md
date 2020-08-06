@@ -24,3 +24,4 @@ To build it simply use the common golang build command `go build main.go`.
 | `--host`    | string | The external IP address to specify on chain file                           |
 | `--source`    | bool | Use this flag to build from source                           |
 | `--debug`    | bool | Use this flag to start nodes on debug mode                           |
+| `--branch`    | string | When using the `source` you can specify a branch to build from                           |

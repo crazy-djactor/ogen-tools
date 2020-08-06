@@ -10,6 +10,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/multiformats/go-multiaddr"
 	"github.com/olympus-protocol/ogen-tools/launcher/config"
 	"github.com/olympus-protocol/ogen/bls"
@@ -158,7 +159,7 @@ func main() {
 }
 
 func loadConfig() config.Config {
-	var pass, externalHost string
+	var pass, externalHost, branch string
 	var nodes, validators int
 	var debug, source bool
 
@@ -168,6 +169,7 @@ func loadConfig() config.Config {
 	flag.IntVar(&validators, "validators", 32, "Define the amount of validators per node (default 32 nodes)")
 	flag.BoolVar(&debug, "debug", false, "Use this flag to start nodes on debug mode")
 	flag.BoolVar(&source, "source", false, "Use this flag to build from source")
+	flag.StringVar(&branch, "branch", "master", "When using the source you can specify a branch to build from")
 	flag.Parse()
 
 	if pass == "" {
@@ -181,6 +183,7 @@ func loadConfig() config.Config {
 		ExternalHost: externalHost,
 		Debug:        debug,
 		Source:       source,
+		Branch:       branch,
 	}
 	return c
 }
@@ -204,7 +207,7 @@ func folders(c config.Config) error {
 	return nil
 }
 
-func buildOgen() error {
+func buildOgen(c config.Config) error {
 	_ = os.RemoveAll("./bin")
 	_ = os.RemoveAll("./ogen")
 
@@ -212,6 +215,7 @@ clone:
 	_, err := git.PlainClone("./ogen", false, &git.CloneOptions{
 		URL:           "https://github.com/olympus-protocol/ogen",
 		Progress:      os.Stdout,
+		ReferenceName: plumbing.NewBranchReferenceName(c.Branch),
 	})
 	if err != nil {
 		// If the repo already exists, delete it and clone again
@@ -251,7 +255,7 @@ clone:
 func downloadOgen() error {
 	_ = os.RemoveAll("./bin")
 
-	file := "https://public.oly.tech/olympus/ogen-release/ogen-0.0.1-linux-amd64.tar.gz"
+	file := "https://public.oly.tech/olympus/ogen-release/ogen-0.0.1-osx-amd64.tar.gz"
 	resp, err := http.Get(file)
 	if err != nil {
 		return err
