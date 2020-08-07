@@ -581,8 +581,8 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 		go func(index int, wg *sync.WaitGroup) {
 			defer wg.Done()
 			client := rpcClient(index)
-			peers := getRandomPeers(peerAddr)
-			for _, p := range peers {
+			//peers := getRandomPeers(peerAddr)
+			for _, p := range peerAddr {
 				_, err := client.Network.AddPeer(context.Background(), &proto.IP{Host: p.String()})
 				if err != nil {
 					continue
