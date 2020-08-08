@@ -1,6 +1,6 @@
 # Ogen development tools
 
-> A group of tool for continious building/deploying Ogen.
+> A set of tools to help on Olympus deployment.
 
 ## Important Note
 
