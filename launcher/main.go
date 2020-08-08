@@ -255,7 +255,7 @@ clone:
 func downloadOgen() error {
 	_ = os.RemoveAll("./bin")
 
-	file := "https://public.oly.tech/olympus/ogen-release/ogen-0.0.1-osx-amd64.tar.gz"
+	file := "https://public.oly.tech/olympus/ogen-release/ogen-0.0.1-linux-amd64.tar.gz"
 	resp, err := http.Get(file)
 	if err != nil {
 		return err
