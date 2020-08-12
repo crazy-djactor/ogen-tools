@@ -351,7 +351,7 @@ func genValidators(index int, password string, amount int) []primitives.Validato
 		return nil
 	}
 
-	cmd := exec.Command("./ogen", "--datadir="+dataDirAbsPath, "generate", strconv.Itoa(amount), password)
+	cmd := exec.Command("./ogen", "--datadir="+dataDirAbsPath, "generate", strconv.Itoa(amount))
 
 	p, err := filepath.Abs("bin/")
 	if err != nil {
@@ -602,7 +602,7 @@ func startChain(c config.Config) (local []multiaddr.Multiaddr, external []multia
 		go func(index int, wg *sync.WaitGroup) {
 			defer wg.Done()
 			client := rpcClient(index)
-			_, err := client.Utils.StartProposer(context.Background(), &proto.Password{Password: c.Password})
+			_, err := client.Utils.StartProposer(context.Background(), &proto.Empty{})
 			if err != nil {
 				return
 			}
