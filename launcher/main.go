@@ -225,7 +225,7 @@ clone:
 		}
 		return err
 	}
-	cmd := exec.Command("make", "build")
+	cmd := exec.Command("scripts/build.sh")
 	cmd.Dir = "./ogen"
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
