@@ -32,7 +32,7 @@ func (c *Controller) move() error {
 
 // build will produce new binaries
 func (c *Controller) build() error {
-	cmd := exec.Command("make", "build_cross_docker")
+	cmd := exec.Command("scripts/build-docker.sh")
 	p, err := filepath.Abs("ogen/")
 	if err != nil {
 		return err
