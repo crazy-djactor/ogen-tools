@@ -31,7 +31,7 @@ jobs:
       shell: bash
 
     - name: Build
-      run: make pack
+      run: ./pack.sh
 
     - name: Set Tag and Release
       run: echo "::set-env name=DATE::$(date +%Y-%m-%d)" 
