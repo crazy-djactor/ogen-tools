@@ -5,7 +5,6 @@
 Requirements:
 
 - Debian based Linux distribution.
-- `make` (to execute makefile comands).
 - Golang
 
 ### Get the program
