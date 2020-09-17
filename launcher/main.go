@@ -167,7 +167,8 @@ func loadConfig() config.Config {
 	flag.StringVar(&externalHost, "host", "127.0.0.1", "IP of the external host to use on chain file")
 	flag.IntVar(&nodes, "nodes", 5, "Setup the amount of nodes the testnet (minimum of 5 nodes)")
 	flag.IntVar(&validators, "validators", 32, "Define the amount of validators per node (default 32 nodes)")
-	flag.BoolVar(&debug, "debug", false, "Use this flag to start nodes on debug mode")
+	//flag.BoolVar(&debug, "debug", false, "Use this flag to start nodes on debug mode")
+	flag.BoolVar(&debug, "debug", true, "Use this flag to start nodes on debug mode")
 	flag.BoolVar(&source, "source", false, "Use this flag to build from source")
 	flag.StringVar(&branch, "branch", "master", "When using the source you can specify a branch to build from")
 	flag.Parse()
@@ -252,6 +253,25 @@ clone:
 	return nil
 }
 
+func RemoveContents(dir string) error {
+	d, err := os.Open(dir)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	names, err := d.Readdirnames(-1)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {
+		err = os.RemoveAll(filepath.Join(dir, name))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func downloadOgen() error {
 	_ = os.RemoveAll("./bin")
 
@@ -275,7 +295,8 @@ func downloadOgen() error {
 		return err
 	}
 
-	err = os.Remove("./ogen-0.0.1")
+	//err = os.Remove("./ogen-0.0.1")
+	err = RemoveContents("./ogen-0.0.1")
 	if err != nil {
 		return err
 	}
